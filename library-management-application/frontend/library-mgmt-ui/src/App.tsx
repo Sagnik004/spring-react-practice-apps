@@ -4,6 +4,7 @@ import './App.css';
 import Navbar from './components/layouts/navbar/Navbar';
 import ExploreTopBooks from './components/layouts/homePage/ExploreTopBooks';
 import Carousel from './components/layouts/homePage/Carousel';
+import Heros from './components/layouts/homePage/Heros';
 
 const App = () => {
   return (
@@ -11,6 +12,7 @@ const App = () => {
       <Navbar />
       <ExploreTopBooks />
       <Carousel />
+      <Heros />
     </div>
   );
 };
