@@ -6,6 +6,7 @@ import ExploreTopBooks from './components/layouts/homePage/ExploreTopBooks';
 import Carousel from './components/layouts/homePage/Carousel';
 import Heros from './components/layouts/homePage/Heros';
 import LibraryServices from './components/layouts/homePage/LibraryServices';
+import Footer from './components/layouts/footer/Footer';
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
       <Carousel />
       <Heros />
       <LibraryServices />
+      <Footer />
     </div>
   );
 };
