@@ -1,6 +1,5 @@
 import React from 'react';
 
-import bookLuv2CodeImg from '../../../images/BooksImages/book-luv2code-1000.png';
 import ReturnBook from './ReturnBook';
 
 const Carousel = () => {
