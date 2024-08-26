@@ -3,16 +3,28 @@ import { useState, useEffect } from 'react';
 import BookModel from '../../models/BookModel';
 import LoadingSpinner from '../utils/LoadingSpinner';
 import SearchBook from './components/SearchBook';
+import Pagination from '../utils/Pagination';
+
+type ResponseBooksMetadata = {
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  number: number;
+};
 
 const SearchBooksPage = () => {
   const [books, setBooks] = useState<BookModel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [httpError, setHttpError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [booksPerPage] = useState(5);
+  const [totalCountOfBooks, setTotalCountOfBooks] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     const fetchBooks = async () => {
       const baseUrl = 'http://localhost:8080/api/books';
-      const url = `${baseUrl}?page=0&size=5`;
+      const url = `${baseUrl}?page=${currentPage - 1}&size=${booksPerPage}`;
 
       const res = await fetch(url);
       if (!res.ok) {
@@ -20,6 +32,7 @@ const SearchBooksPage = () => {
       }
       const responseJson = await res.json();
       const responseData = responseJson._embedded.books;
+      const responseBooksMetadata: ResponseBooksMetadata = responseJson.page;
 
       const loadedBooks: BookModel[] = [];
       for (const key in responseData) {
@@ -35,6 +48,9 @@ const SearchBooksPage = () => {
         });
       }
 
+      setTotalCountOfBooks(responseBooksMetadata.totalElements);
+      setTotalPages(responseBooksMetadata.totalPages);
+
       setBooks(loadedBooks);
       setIsLoading(false);
     };
@@ -43,7 +59,20 @@ const SearchBooksPage = () => {
       setIsLoading(false);
       setHttpError(err.message);
     });
-  }, []);
+
+    scrollToTop();
+  }, [currentPage]);
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -56,6 +85,13 @@ const SearchBooksPage = () => {
       </div>
     );
   }
+
+  const indexOfLastBook = currentPage * booksPerPage;
+  const indexOfFirstBook = indexOfLastBook - booksPerPage;
+  let lastItem =
+    booksPerPage * currentPage <= totalCountOfBooks
+      ? booksPerPage * currentPage
+      : totalCountOfBooks;
 
   return (
     <div>
@@ -121,14 +157,25 @@ const SearchBooksPage = () => {
 
           {/* Search results overview */}
           <div className="mt-3">
-            <h5>Number of results: (22)</h5>
+            <h5>Number of results: ({totalCountOfBooks})</h5>
           </div>
-          <p>1 to 5 of 22 items</p>
+          <p>
+            {indexOfFirstBook + 1} to {lastItem} of {totalCountOfBooks} items
+          </p>
 
           {/* Render books */}
           {books.map((book) => (
             <SearchBook key={book.id} book={book} />
           ))}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              paginate={paginate}
+            />
+          )}
         </div>
       </div>
     </div>
