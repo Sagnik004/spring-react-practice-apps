@@ -20,11 +20,18 @@ const SearchBooksPage = () => {
   const [booksPerPage] = useState(5);
   const [totalCountOfBooks, setTotalCountOfBooks] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [search, setSearch] = useState('');
+  const [searchUrl, setSearchUrl] = useState('');
 
   useEffect(() => {
     const fetchBooks = async () => {
       const baseUrl = 'http://localhost:8080/api/books';
-      const url = `${baseUrl}?page=${currentPage - 1}&size=${booksPerPage}`;
+      let url = '';
+      if (searchUrl === '') {
+        url = `${baseUrl}?page=${currentPage - 1}&size=${booksPerPage}`;
+      } else {
+        url = baseUrl + searchUrl;
+      }
 
       const res = await fetch(url);
       if (!res.ok) {
@@ -61,7 +68,7 @@ const SearchBooksPage = () => {
     });
 
     scrollToTop();
-  }, [currentPage]);
+  }, [currentPage, searchUrl]);
 
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -86,6 +93,16 @@ const SearchBooksPage = () => {
     );
   }
 
+  const handleSearchChange = () => {
+    if (search === '') {
+      setSearchUrl('');
+    } else {
+      setSearchUrl(
+        `/search/findByTitleContaining?title=${search.trim()}&page=0&size=${booksPerPage}`
+      );
+    }
+  };
+
   const indexOfLastBook = currentPage * booksPerPage;
   const indexOfFirstBook = indexOfLastBook - booksPerPage;
   let lastItem =
@@ -106,8 +123,14 @@ const SearchBooksPage = () => {
                   type="search"
                   placeholder="Search"
                   aria-labelledby="Search"
+                  onChange={(e) => setSearch(e.target.value)}
                 />
-                <button className="btn btn-outline-success">Search</button>
+                <button
+                  className="btn btn-outline-success"
+                  onClick={handleSearchChange}
+                >
+                  Search
+                </button>
               </div>
             </div>
             <div className="col-4">
@@ -156,17 +179,33 @@ const SearchBooksPage = () => {
           </div>
 
           {/* Search results overview */}
-          <div className="mt-3">
-            <h5>Number of results: ({totalCountOfBooks})</h5>
-          </div>
-          <p>
-            {indexOfFirstBook + 1} to {lastItem} of {totalCountOfBooks} items
-          </p>
+          {totalCountOfBooks > 0 ? (
+            <>
+              <div className="mt-3">
+                <h5>Number of results: ({totalCountOfBooks})</h5>
+              </div>
+              <p>
+                {indexOfFirstBook + 1} to {lastItem} of {totalCountOfBooks}{' '}
+                items
+              </p>
 
-          {/* Render books */}
-          {books.map((book) => (
-            <SearchBook key={book.id} book={book} />
-          ))}
+              {/* Render books */}
+              {books.map((book) => (
+                <SearchBook key={book.id} book={book} />
+              ))}
+            </>
+          ) : (
+            <div className="m-5">
+              <h3>Can't find what you are looking for?</h3>
+              <a
+                href="#"
+                type="button"
+                className="btn main-color btn-md px-4 me-md-2 fw-bold text-white"
+              >
+                Library Services
+              </a>
+            </div>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (
