@@ -22,6 +22,7 @@ const SearchBooksPage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [search, setSearch] = useState('');
   const [searchUrl, setSearchUrl] = useState('');
+  const [categorySelected, setCategorySelected] = useState('Book category');
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -103,6 +104,23 @@ const SearchBooksPage = () => {
     }
   };
 
+  const handleCategoryChange = (value: string) => {
+    if (
+      value.toLowerCase() === 'fe' ||
+      value.toLowerCase() === 'be' ||
+      value.toLowerCase() === 'data' ||
+      value.toLowerCase() === 'devops'
+    ) {
+      setCategorySelected(value);
+      setSearchUrl(
+        `/search/findByCategory?category=${value}&page=0&size=${booksPerPage}`
+      );
+    } else {
+      setCategorySelected('All');
+      setSearchUrl(`?page=0&size=${booksPerPage}`);
+    }
+  };
+
   const indexOfLastBook = currentPage * booksPerPage;
   const indexOfFirstBook = indexOfLastBook - booksPerPage;
   let lastItem =
@@ -142,33 +160,33 @@ const SearchBooksPage = () => {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Category
+                  {categorySelected}
                 </button>
                 <ul
                   className="dropdown-menu"
                   aria-labelledby="dropdownMenuButton1"
                 >
-                  <li>
+                  <li onClick={() => handleCategoryChange('All')}>
                     <a className="dropdown-item" href="#">
                       All
                     </a>
                   </li>
-                  <li>
+                  <li onClick={() => handleCategoryChange('FE')}>
                     <a className="dropdown-item" href="#">
                       Front End
                     </a>
                   </li>
-                  <li>
+                  <li onClick={() => handleCategoryChange('BE')}>
                     <a className="dropdown-item" href="#">
                       Back End
                     </a>
                   </li>
-                  <li>
+                  <li onClick={() => handleCategoryChange('Data')}>
                     <a className="dropdown-item" href="#">
                       Data
                     </a>
                   </li>
-                  <li>
+                  <li onClick={() => handleCategoryChange('DevOps')}>
                     <a className="dropdown-item" href="#">
                       DevOps
                     </a>
