@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import bookLuv2CodeDefaultImg from '../../../images/BooksImages/book-luv2code-1000.png';
 import BookModel from '../../../models/BookModel';
 
 const SearchBook: React.FC<{ book: BookModel }> = (props) => {
-  const { title, author, description, img: bookImg } = props.book;
+  const { id: bookId, title, author, description, img: bookImg } = props.book;
 
   return (
     <div className="card mt-3 shadow p-3 mb-3 bg-body rounded">
@@ -27,7 +28,7 @@ const SearchBook: React.FC<{ book: BookModel }> = (props) => {
               />
             )}
           </div>
-          <div className='d-lg-none d-flex justify-content-center align-items-center'>
+          <div className="d-lg-none d-flex justify-content-center align-items-center">
             {bookImg ? (
               <img
                 src={bookImg}
@@ -55,9 +56,12 @@ const SearchBook: React.FC<{ book: BookModel }> = (props) => {
         </div>
 
         <div className="col-md-4 d-flex justify-content-center align-items-center">
-          <a className="btn btn-md main-color text-white" href="#">
+          <Link
+            to={`/checkout/${bookId}`}
+            className="btn btn-md main-color text-white"
+          >
             View Details
-          </a>
+          </Link>
         </div>
       </div>
     </div>
